@@ -49,7 +49,8 @@ var liveServer = require("live-server");
 var port = 8181; // Set the server port. Defaults to 8080.
 var dir = "/public"; // Set root of directory that's being server. Defaults to cwd.
 var suppressBrowserLaunch = true; // When true, it won't load your browser by default.
-liveServer.start(port, dir, suppressBrowserLaunch);
+var host = '0.0.0.0'; // Set the server host. Defaults to localhost.
+liveServer.start(port, dir, suppressBrowserLaunch, host);
 ```
 
 

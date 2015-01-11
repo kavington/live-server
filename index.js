@@ -60,12 +60,14 @@ function staticServer(root) {
 }
 
 /**
- * Start a live server at the given port and directory
+ * Start a live server at the given port, directory, and host
  * @param port {number} Port number (default 8080)
  * @param directory {string} Path to root directory (default to cwd)
  * @param suppressBrowserLaunch
+ * @param host {string} Host (default 'localhost')
  */
-LiveServer.start = function(port, directory, suppressBrowserLaunch) {
+LiveServer.start = function(port, directory, suppressBrowserLaunch, host) {
+	host = host || 'localhost';
 	port = port || 8080;
 	directory = directory || process.cwd();
 
@@ -74,7 +76,7 @@ LiveServer.start = function(port, directory, suppressBrowserLaunch) {
 		.use(staticServer(directory)) // Custom static server
 		.use(connect.directory(directory, { icons: true }))
 		.use(connect.logger('dev'));
-	var server = http.createServer(app).listen(port);
+	var server = http.createServer(app).listen(port, host);
 	// WebSocket
 	server.addListener('upgrade', function(request, socket, head) {
 		ws = new WebSocket(request, socket, head);
@@ -104,11 +106,11 @@ LiveServer.start = function(port, directory, suppressBrowserLaunch) {
 		}
 	});
 	// Output
-	console.log(('Serving "' + directory + '" at http://localhost:' + port).green);
+	console.log(('Serving "' + directory + '" at http://' + host + ':' + port).green);
 
 	// Launch browser
 	if(!suppressBrowserLaunch)
-		open('http://localhost:' + port);
+		open('http://' + host + ':' + port);
 };
 
 module.exports = LiveServer;
