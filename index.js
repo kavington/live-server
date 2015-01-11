@@ -22,6 +22,16 @@ function escape(html){
 		.replace(/"/g, '&quot;');
 }
 
+// Shallow extend function
+function extend(target, source) {
+	for (var k in source) {
+		if (source.hasOwnProperty(k)) {
+			target[k] = source[k];
+		}
+	}
+	return target;
+}
+
 // Based on connect.static(), but streamlined and with added code injecter
 function staticServer(root) {
 	return function(req, res, next) {
@@ -65,18 +75,38 @@ function staticServer(root) {
  * @param directory {string} Path to root directory (default to cwd)
  * @param suppressBrowserLaunch
  * @param host {string} Host (default 'localhost')
+ * Or
+ * @param port {object} Config object defining above
  */
 LiveServer.start = function(port, directory, suppressBrowserLaunch, host) {
-	host = host || 'localhost';
-	port = port || 8080;
-	directory = directory || process.cwd();
+	var opts, defaults = {
+		host: 'localhost',
+		port: 8080,
+		directory: process.cwd(),
+		suppressBrowserLaunch: false
+	};
+
+	// if first arg is an object, use as a config object
+	if (typeof port === 'object') opts = extend(defaults, port);
+	else {
+		var args = {};
+
+		if (host) args.host = host;
+		if (port) args.port = port;
+		if (directory) args.directory = directory;
+
+		if (suppressBrowserLaunch !== undefined)
+			args.suppressBrowserLaunch = suppressBrowserLaunch;
+
+		opts = extend(defaults, args);
+	}
 
 	// Setup a web server
 	var app = connect()
-		.use(staticServer(directory)) // Custom static server
-		.use(connect.directory(directory, { icons: true }))
+		.use(staticServer(opts.directory)) // Custom static server
+		.use(connect.directory(opts.directory, { icons: true }))
 		.use(connect.logger('dev'));
-	var server = http.createServer(app).listen(port, host);
+	var server = http.createServer(app).listen(opts.port, opts.host);
 	// WebSocket
 	server.addListener('upgrade', function(request, socket, head) {
 		ws = new WebSocket(request, socket, head);
@@ -84,7 +114,7 @@ LiveServer.start = function(port, directory, suppressBrowserLaunch, host) {
 	});
 	// Setup file watcher
 	watchr.watch({
-		path: directory,
+		path: opts.directory,
 		ignoreCommonPatterns: true,
 		ignoreHiddenFiles: true,
 		preferredMethods: [ 'watchFile', 'watch' ],
@@ -106,11 +136,14 @@ LiveServer.start = function(port, directory, suppressBrowserLaunch, host) {
 		}
 	});
 	// Output
-	console.log(('Serving "' + directory + '" at http://' + host + ':' + port).green);
+	console.log(([
+		'Serving "', opts.directory,
+		'" at http://', opts.host, ':', opts.port
+	].join('')).green);
 
 	// Launch browser
 	if(!suppressBrowserLaunch)
-		open('http://' + host + ':' + port);
+		open('http://' + opts.host + ':' + opts.port);
 };
 
 module.exports = LiveServer;

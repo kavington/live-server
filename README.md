@@ -53,6 +53,18 @@ var host = '0.0.0.0'; // Set the server host. Defaults to localhost.
 liveServer.start(port, dir, suppressBrowserLaunch, host);
 ```
 
+Alternatively, pass in an object to configure the server
+
+```javascript
+var serverConfig = {
+	host = '0.0.0.0',
+	port: 8181,
+	dir = "/public",
+	suppressBrowserLaunch: true
+};
+liveServer.start(serverConfig);
+```
+
 
 Troubleshooting
 ---------------
