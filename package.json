@@ -1,7 +1,7 @@
 {
-	"name": "live-server",
+	"name": "live-server-obj-config",
 	"version": "0.6.3",
-	"description": "simple development http server with live reload capability",
+	"description": "simple development http server with live reload capability. Fork of https://github.com/tapio/live-server.git by Tapio Vierros to allow host name specification and config object initialisation",
 	"keywords": [
 		"front-end",
 		"development",
@@ -10,7 +10,7 @@
 		"http",
 		"cli"
 	],
-	"author": "Tapio Vierros",
+	"author": "Tapio Vierros, Kav Singh",
 	"dependencies": {
 		"connect": "2.x.x",
 		"send": "latest",
@@ -27,7 +27,7 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/tapio/live-server.git"
+		"url": "https://github.com/kavington/live-server.git"
 	},
 	"engines": {
 		"node": ">=0.8.0"
